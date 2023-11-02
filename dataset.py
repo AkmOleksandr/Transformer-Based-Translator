@@ -1,5 +1,6 @@
 '''
-Downloading the dataset and returning ... for ... stages in the process (what input encoder what's input in decoder etc.)
+Downloading the dataset and returning a single tokenized pair for incoder input and decoder input
+respectively along with label sentence for decoder input (to be explained like 5 the order of actions)
 '''
 
 import torch
