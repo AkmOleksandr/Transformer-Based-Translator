@@ -54,23 +54,7 @@ def get_ds(config): # load, split the dataset for training and testing and token
 
     train_ds = BilingualDataset(train_ds_raw, tokenizer_src, tokenizer_trgt, config['lang_src'], config['lang_trgt'], config['seq_len'])
     val_ds = BilingualDataset(val_ds_raw, tokenizer_src, tokenizer_trgt, config['lang_src'], config['lang_trgt'], config['seq_len'])
-
-
-    # Optional print!
-    # Find the maximum length of each sentence in the source and target sentence
-    max_len_src = 0
-    max_len_trgt = 0
-
-    for item in ds_raw:
-        src_ids = tokenizer_src.encode(item['translation'][config['lang_src']]).ids # transform English text into tokenizer object and access ids (actual tokens) for every sentence
-        trgt_ids = tokenizer_trgt.encode(item['translation'][config['lang_trgt']]).ids # transform Italian text into tokenizer object and access ids (actual tokens) for every sentence
-        max_len_src = max(max_len_src, len(src_ids))
-        max_len_trgt = max(max_len_trgt, len(trgt_ids))
-
-    print(f'Max length of source sentence: {max_len_src}')
-    print(f'Max length of target sentence: {max_len_trgt}')
     
-
     # Create DataLoader objects
     train_dataloader = DataLoader(train_ds, batch_size=config['batch_size'], shuffle=True)
     val_dataloader = DataLoader(val_ds, batch_size=1, shuffle=True)
