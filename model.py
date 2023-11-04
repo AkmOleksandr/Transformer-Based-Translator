@@ -1,7 +1,3 @@
-'''
-Creting a model that takes 
-'''
-
 import torch
 import torch.nn as nn
 import math
@@ -169,7 +165,7 @@ class Decoder(nn.Module):
         self.norm = LayerNormalization(features)
 
     def forward(self, X, encoder_output, src_mask, trgt_mask):
-        
+
         for layer in self.layers:
             X = layer(X, encoder_output, src_mask, trgt_mask)
 
