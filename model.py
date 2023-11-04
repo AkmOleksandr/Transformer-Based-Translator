@@ -1,5 +1,5 @@
 '''
-Creting a model that takes ....
+Creting a model that takes 
 '''
 
 import torch
@@ -11,10 +11,10 @@ class InputEmbeddings(nn.Module):
         super().__init__()
         self.d_model = d_model
         self.vocab_size = vocab_size
-        self.embedding = nn.Embedding(vocab_size, d_model)
+        self.embedding = nn.Embedding(vocab_size, d_model) # initialize dimensions of embedding with number of unique units in vocabulary and size of embedding (size of vector to represent every word)
 
     def forward(self, X):
-        return self.embedding(X) * math.sqrt(self.d_model)
+        return self.embedding(X) * math.sqrt(self.d_model) # apply it on input data and multiply by sqrt of embedding size 
 
 class PositionalEncoding(nn.Module):
     def __init__(self, d_model, seq_len, dropout):
@@ -22,7 +22,7 @@ class PositionalEncoding(nn.Module):
         self.d_model = d_model
         self.seq_len = seq_len
         self.dropout = nn.Dropout(dropout)
-        PE = torch.zeros(seq_len, d_model)
+        PE = torch.zeros(seq_len, d_model) # every row will be an embedding of a single unit sorted in order in which units came in sentence
         position = torch.arange(0, seq_len, dtype=torch.float).unsqueeze(1)
         div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
         PE[:, 0::2] = torch.sin(position * div_term)
@@ -31,7 +31,7 @@ class PositionalEncoding(nn.Module):
         self.register_buffer("PE", PE)
 
     def forward(self, X):
-        X = X + (self.PE[:, :X.shape[1], :]).requires_grad_(False)
+        X = X + (self.PE[:, :X.shape[1], :]).requires_grad_(False) # embedding matrix as input, append position of every word in the sentence (same for every sentence)
         return self.dropout(X)
     
 class ResidualConnection(nn.Module): # connecter
@@ -41,7 +41,7 @@ class ResidualConnection(nn.Module): # connecter
         self.norm = LayerNormalization(features)
 
     def forward(self, X, sublayer):
-        return X + self.dropout(sublayer(self.norm(X)))
+        return X + self.dropout(sublayer(self.norm(X))) # combines embedding matrix with normalized embedding matrix
 
 class MultiHeadAttentionBlock(nn.Module):
     def __init__(self, d_model, h, dropout):
@@ -50,7 +50,9 @@ class MultiHeadAttentionBlock(nn.Module):
         self.h = h
         assert d_model % h == 0, "d_model is not divisible by h"
 
-        self.d_k = d_model // h
+        self.d_k = d_model // h # size of every head
+
+        # weights
         self.w_q = nn.Linear(d_model, d_model, bias=False)
         self.w_k = nn.Linear(d_model, d_model, bias=False)
         self.w_v = nn.Linear(d_model, d_model, bias=False)
@@ -59,13 +61,18 @@ class MultiHeadAttentionBlock(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def attention(Q, K, V, mask, dropout):
+
         d_k = Q.shape[-1]
-        attention_scores = (Q @ K.transpose(-2, -1)) / math.sqrt(d_k)
+
+        attention_scores = (Q @ K.transpose(-2, -1)) / math.sqrt(d_k) # formula for attention
+
         if mask is not None:
-            attention_scores.masked_fill_(mask == 0, -1e9)
+            attention_scores.masked_fill_(mask == 0, -1e9) # hide next words for masked attention
         attention_scores = attention_scores.softmax(dim=-1)
+
         if dropout is not None:
             attention_scores = dropout(attention_scores)
+
         return (attention_scores @ V), attention_scores
 
     def forward(self, Q, K, V, mask):
@@ -73,6 +80,7 @@ class MultiHeadAttentionBlock(nn.Module):
         query = self.w_q(Q)
         key = self.w_k(K)
         value = self.w_v(V)
+        
         query = query.view(query.shape[0], query.shape[1], self.h, self.d_k).transpose(1, 2)
         key = key.view(key.shape[0], key.shape[1], self.h, self.d_k).transpose(1, 2)
         value = value.view(value.shape[0], value.shape[1], self.h, self.d_k).transpose(1, 2)
