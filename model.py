@@ -73,20 +73,21 @@ class MultiHeadAttentionBlock(nn.Module):
         if dropout is not None:
             attention_scores = dropout(attention_scores)
 
-        return (attention_scores @ V), attention_scores
+        return (attention_scores @ V)
 
     def forward(self, Q, K, V, mask):
 
         query = self.w_q(Q)
         key = self.w_k(K)
         value = self.w_v(V)
-        
-        query = query.view(query.shape[0], query.shape[1], self.h, self.d_k).transpose(1, 2)
+
+        # split each into h heads each matrix
+        query = query.view(query.shape[0], query.shape[1], self.h, self.d_k).transpose(1, 2) 
         key = key.view(key.shape[0], key.shape[1], self.h, self.d_k).transpose(1, 2)
         value = value.view(value.shape[0], value.shape[1], self.h, self.d_k).transpose(1, 2)
 
-        X, self.attention_scores = MultiHeadAttentionBlock.attention(query, key, value, mask, self.dropout)
-        X = X.transpose(1, 2).contiguous().view(X.shape[0], -1, self.h * self.d_k)
+        X = MultiHeadAttentionBlock.attention(query, key, value, mask, self.dropout) # calculate attention for each head using parallel computing
+        X = X.transpose(1, 2).contiguous().view(X.shape[0], -1, self.h * self.d_k) 
         
         return self.w_o(X)
 
