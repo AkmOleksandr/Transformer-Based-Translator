@@ -52,7 +52,7 @@ class MultiHeadAttentionBlock(nn.Module):
 
         self.d_k = d_model // h # size of every head
 
-        # weights
+        # feed forward layers
         self.w_q = nn.Linear(d_model, d_model, bias=False)
         self.w_k = nn.Linear(d_model, d_model, bias=False)
         self.w_v = nn.Linear(d_model, d_model, bias=False)
@@ -87,20 +87,23 @@ class MultiHeadAttentionBlock(nn.Module):
         value = value.view(value.shape[0], value.shape[1], self.h, self.d_k).transpose(1, 2)
 
         X = MultiHeadAttentionBlock.attention(query, key, value, mask, self.dropout) # calculate attention for each head using parallel computing
-        X = X.transpose(1, 2).contiguous().view(X.shape[0], -1, self.h * self.d_k) 
+        X = X.transpose(1, 2).contiguous().view(X.shape[0], -1, self.h * self.d_k) # concatenate results of heads
         
-        return self.w_o(X)
+        return self.w_o(X) # pass through feed forward layer
 
-class LayerNormalization(nn.Module):
+class LayerNormalization(nn.Module): # normalize 
     def __init__(self, features, eps=1e-6):
         super().__init__()
+
         self.eps = eps
         self.alpha = nn.Parameter(torch.ones(features))
         self.bias = nn.Parameter(torch.zeros(features))
 
     def forward(self, X):
+
         mean = X.mean(dim=-1, keepdim=True)
         std = X.std(dim=-1, keepdim=True)
+
         return self.alpha * (X - mean) / (std + self.eps) + self.bias
     
 class FeedForwardBlock(nn.Module):
@@ -114,7 +117,7 @@ class FeedForwardBlock(nn.Module):
         return self.linear_2(self.dropout(torch.relu(self.linear_1(X))))
     
 class EncoderBlock(nn.Module):
-    def __init__(self, features: int, self_attention_block: MultiHeadAttentionBlock, feed_forward_block: FeedForwardBlock, dropout: float) -> None:
+    def __init__(self, features, self_attention_block, feed_forward_block, dropout):
         super().__init__()
         self.self_attention_block = self_attention_block
         self.feed_forward_block = feed_forward_block
@@ -127,7 +130,7 @@ class EncoderBlock(nn.Module):
         return X
     
 class Encoder(nn.Module):
-    def __init__(self, features: int, layers: nn.ModuleList) -> None:
+    def __init__(self, features, layers):
         super().__init__()
         self.layers = layers
         self.norm = LayerNormalization(features)
@@ -140,7 +143,7 @@ class Encoder(nn.Module):
     
 class DecoderBlock(nn.Module):
 
-    def __init__(self, features: int, self_attention_block: MultiHeadAttentionBlock, cross_attention_block: MultiHeadAttentionBlock, feed_forward_block: FeedForwardBlock, dropout: float) -> None:
+    def __init__(self, features, self_attention_block, cross_attention_block, feed_forward_block, dropout):
         super().__init__()
         self.self_attention_block = self_attention_block
         self.cross_attention_block = cross_attention_block
@@ -156,7 +159,7 @@ class DecoderBlock(nn.Module):
     
 class Decoder(nn.Module):
 
-    def __init__(self, features: int, layers: nn.ModuleList) -> None:
+    def __init__(self, features, layers):
         super().__init__()
         self.layers = layers
         self.norm = LayerNormalization(features)
@@ -169,17 +172,17 @@ class Decoder(nn.Module):
     
 class ProjectionLayer(nn.Module): # maps embedding with positions in vocabulary
 
-    def __init__(self, d_model, vocab_size) -> None:
+    def __init__(self, d_model, vocab_size):
         super().__init__()
         self.proj = nn.Linear(d_model, vocab_size)
 
-    def forward(self, X) -> None:
+    def forward(self, X):
         # (batch, seq_len, d_model) --> (batch, seq_len, vocab_size)
         return self.proj(X)
     
 class Transformer(nn.Module):
 
-    def __init__(self, encoder: Encoder, decoder: Decoder, src_embed: InputEmbeddings, trgt_embed: InputEmbeddings, src_pos: PositionalEncoding, trgt_pos: PositionalEncoding, projection_layer: ProjectionLayer) -> None:
+    def __init__(self, encoder: Encoder, decoder: Decoder, src_embed: InputEmbeddings, trgt_embed: InputEmbeddings, src_pos: PositionalEncoding, trgt_pos: PositionalEncoding, projection_layer: ProjectionLayer):
         super().__init__()
         self.encoder = encoder
         self.decoder = decoder
@@ -205,7 +208,7 @@ class Transformer(nn.Module):
         # (batch, seq_len, vocab_size)
         return self.projection_layer(X)
     
-def build_transformer(src_vocab_size: int, trgt_vocab_size: int, src_seq_len: int, trgt_seq_len: int, d_model: int=512, N: int=6, h: int=8, dropout: float=0.1, d_ff: int=2048) -> Transformer:
+def build_transformer(src_vocab_size, trgt_vocab_size, src_seq_len, trgt_seq_len, d_model=512, N=6, h=8, dropout=0.1, d_ff=2048) -> Transformer:
     # Create the embedding layers
     src_embed = InputEmbeddings(d_model, src_vocab_size)
     trgt_embed = InputEmbeddings(d_model, trgt_vocab_size)
