@@ -31,10 +31,10 @@ class PositionalEncoding(nn.Module):
         return self.dropout(X)
     
 class ResidualConnection(nn.Module): # connecter
-    def __init__(self, features, dropout):
+    def __init__(self, num_features, dropout):
         super().__init__()
         self.dropout = nn.Dropout(dropout)
-        self.norm = LayerNormalization(features)
+        self.norm = LayerNormalization(num_features)
 
     def forward(self, X, sublayer):
         return X + self.dropout(sublayer(self.norm(X))) # combines embedding matrix with normalized embedding matrix
@@ -88,12 +88,12 @@ class MultiHeadAttentionBlock(nn.Module):
         return self.w_o(X) # pass through feed forward layer
 
 class LayerNormalization(nn.Module): # normalize 
-    def __init__(self, features, eps=1e-6):
+    def __init__(self, num_features, eps=1e-6):
         super().__init__()
 
         self.eps = eps
-        self.alpha = nn.Parameter(torch.ones(features))
-        self.bias = nn.Parameter(torch.zeros(features))
+        self.alpha = nn.Parameter(torch.ones(num_features))
+        self.bias = nn.Parameter(torch.zeros(num_features))
 
     def forward(self, X):
 
@@ -113,11 +113,11 @@ class FeedForwardBlock(nn.Module): # copletely optional architecture
         return self.linear_2(self.dropout(torch.relu(self.linear_1(X))))
     
 class EncoderBlock(nn.Module):
-    def __init__(self, features, self_attention_block, feed_forward_block, dropout):
+    def __init__(self, num_features, self_attention_block, feed_forward_block, dropout):
         super().__init__()
         self.self_attention_block = self_attention_block
         self.feed_forward_block = feed_forward_block
-        self.residual_connections = nn.ModuleList([ResidualConnection(features, dropout) for _ in range(2)])
+        self.residual_connections = nn.ModuleList([ResidualConnection(num_features, dropout) for _ in range(2)])
 
     def forward(self, X, src_mask):
 
@@ -127,11 +127,11 @@ class EncoderBlock(nn.Module):
         return X
     
 class Encoder(nn.Module):
-    def __init__(self, features, layers):
+    def __init__(self, num_features, layers):
         super().__init__()
 
         self.layers = layers
-        self.norm = LayerNormalization(features)
+        self.norm = LayerNormalization(num_features)
 
     def forward(self, X, mask):
 
@@ -141,13 +141,13 @@ class Encoder(nn.Module):
         return self.norm(X)
     
 class DecoderBlock(nn.Module):
-    def __init__(self, features, self_attention_block, cross_attention_block, feed_forward_block, dropout):
+    def __init__(self, num_features, self_attention_block, cross_attention_block, feed_forward_block, dropout):
         super().__init__()
 
         self.self_attention_block = self_attention_block
         self.cross_attention_block = cross_attention_block
         self.feed_forward_block = feed_forward_block
-        self.residual_connections = nn.ModuleList([ResidualConnection(features, dropout) for _ in range(3)])
+        self.residual_connections = nn.ModuleList([ResidualConnection(num_features, dropout) for _ in range(3)])
 
     def forward(self, X, encoder_output, src_mask, trgt_mask):
 
@@ -158,11 +158,11 @@ class DecoderBlock(nn.Module):
         return X
     
 class Decoder(nn.Module):
-    def __init__(self, features, layers):
+    def __init__(self, num_features, layers):
         super().__init__()
 
         self.layers = layers
-        self.norm = LayerNormalization(features)
+        self.norm = LayerNormalization(num_features)
 
     def forward(self, X, encoder_output, src_mask, trgt_mask):
 
