@@ -18,7 +18,7 @@ class PositionalEncoding(nn.Module):
         self.d_model = d_model
         self.seq_len = seq_len
         self.dropout = nn.Dropout(dropout)
-        PE = torch.zeros(seq_len, d_model) # every row will be an embedding of a single unit sorted in order in which units came in sentence
+        PE = torch.zeros(seq_len, d_model) # every row will be an embedding of a single unit is in which units came in sentence
         position = torch.arange(0, seq_len, dtype=torch.float).unsqueeze(1)
         div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
         PE[:, 0::2] = torch.sin(position * div_term)
@@ -193,7 +193,8 @@ class Transformer(nn.Module):
         self.trgt_pos = trgt_pos
         self.projection_layer = projection_layer
 
-    def encode(self, src, src_mask):
+    # Every sentence is a single batch, which is a matrix of seq_len (max length of sentence) x d_model (embedding size)
+    def encode(self, src, src_mask): # computed once
         # (batch, seq_len, d_model)
         src = self.src_embed(src)
         src = self.src_pos(src)
@@ -214,7 +215,7 @@ def build_transformer(src_vocab_size, trgt_vocab_size, src_seq_len, trgt_seq_len
     src_embed = InputEmbeddings(d_model, src_vocab_size)
     trgt_embed = InputEmbeddings(d_model, trgt_vocab_size)
 
-    # Create 2 positional encoding matrices
+    # Modify them with 2 positional encoding matrices
     src_pos = PositionalEncoding(d_model, src_seq_len, dropout)
     trgt_pos = PositionalEncoding(d_model, trgt_seq_len, dropout)
     
@@ -240,7 +241,7 @@ def build_transformer(src_vocab_size, trgt_vocab_size, src_seq_len, trgt_seq_len
     decoder = Decoder(d_model, nn.ModuleList(decoder_blocks))
     
     # Create projection layer
-    projection_layer = ProjectionLayer(d_model, trgt_vocab_size)
+    projection_layer = ProjectionLayer(d_model, trgt_vocab_size) # map to target vocab because we predict it
     
     # Create transformer
     transformer = Transformer(encoder, decoder, src_embed, trgt_embed, src_pos, trgt_pos, projection_layer)

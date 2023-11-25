@@ -1,10 +1,9 @@
 '''
-Downloading the dataset and returning a single tokenized pair for incoder input and decoder input
-respectively along with label sentence for decoder input (to be explained like 5 the order of actions)
+Downloading the dataset and returning a single tokenized pair for encoder input and decoder input
+respectively along with label sentence for decoder
 '''
 
 import torch
-import torch.nn as nn
 from torch.utils.data import Dataset
 
 class BilingualDataset(Dataset):

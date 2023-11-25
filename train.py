@@ -99,18 +99,18 @@ def train_model(config):
     loss_fn = nn.CrossEntropyLoss(ignore_index=tokenizer_src.token_to_id('[PAD]'), label_smoothing=0.1).to(device) # CrossEntropy Loss
 
     for epoch in range(initial_epoch, config['num_epochs']):
-        torch.cuda.empty_cache()
+        torch.cuda.empty_cache()    
         model.train() # every epoch go back to training mode after the validation (could be done with metrics)
-        batch_iterator = tqdm(train_dataloader, desc=f"Processing Epoch {epoch:02d}") # optional visualize progress bar
+        batch_iterator = tqdm(train_dataloader, desc=f"Processing Epoch {epoch:02d}") # splits data into batches and visualizes process of training
 
         for batch in batch_iterator:
 
             encoder_input = batch['encoder_input'].to(device)
             decoder_input = batch['decoder_input'].to(device) 
             encoder_mask = batch['encoder_mask'].to(device) 
-            decoder_mask = batch['decoder_mask'].to(device)# create encoder mask to mask the padding # create decoder mask to mask the padding and next words for masked multi-hed attention
+            decoder_mask = batch['decoder_mask'].to(device)
 
-            # Pass tensors through the encoder, decoder and the projection layer
+            # Pass batch of training data through encoder, decoder and the projection layer
             encoder_output = model.encode(encoder_input, encoder_mask)
             decoder_output = model.decode(encoder_output, encoder_mask, decoder_input, decoder_mask)
             proj_output = model.project(decoder_output) 
@@ -118,7 +118,7 @@ def train_model(config):
             label = batch['label'].to(device) # extract labels from the batch
 
             # Compute the loss
-            loss = loss_fn(proj_output.view(-1, tokenizer_trgt.get_vocab_size()), label.view(-1)) # output, label as inputs into the loss
+            loss = loss_fn(proj_output.view(-1, tokenizer_trgt.get_vocab_size()), label.view(-1)) # output and label as inputs into the loss
 
             batch_iterator.set_postfix({"loss": f"{loss.item():6.3f}"}) # print loss along with the progress bar
 
