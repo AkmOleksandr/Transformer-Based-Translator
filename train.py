@@ -1,5 +1,5 @@
 '''
-Take a batch of train data (...), take labels (...), compute loss, optimize with Adam, run validation (... take this,  pass through encoder, receive encoder output (computed once). Then pass encoder output( embedding of the shape... where each row is...) along with empty decoder output (<SOS> token)..., predict a single word, append it to decoder output and pass the encoder output along with update decoder output(<SOS> 'word'), until we ...) )  
+Take a batch of train data (a single sentence), take labels (same sentence of target language), compute loss, optimize with Adam, run validation (... take this,  pass through encoder, receive encoder output (computed once). Then pass encoder output( embedding of the shape... where each row is...) along with empty decoder output (<SOS> token)..., predict a single word, append it to decoder output and pass the encoder output along with update decoder output(<SOS> 'word'), until we ...) )  
 '''
 # From files
 from model import build_transformer
@@ -15,7 +15,6 @@ from tqdm import tqdm
 import os
 from pathlib import Path
 
-# Huggingface datasets and tokenizers
 from datasets import load_dataset
 from tokenizers import Tokenizer
 from tokenizers.models import WordLevel
@@ -41,7 +40,10 @@ def get_or_build_tokenizer(config, ds, lang): # config -  access dictionary with
     return tokenizer
 
 def get_ds(config): # load, split the dataset for training and testing and tokenize it
-    ds_raw = load_dataset(f"{config['datasource']}", f"{config['lang_src']}-{config['lang_trgt']}", split='train') # initial dataset
+    ds_raw = load_dataset('json', data_files='eng-ukr-dataset/data.json', split='train') # initial dataset
+
+    print(type(ds_raw))
+    print(ds_raw[0])
 
     # Build tokenizers for source and target data
     tokenizer_src = get_or_build_tokenizer(config, ds_raw, config['lang_src'])

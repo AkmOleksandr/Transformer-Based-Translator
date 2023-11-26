@@ -1,4 +1,3 @@
-# https://www.youtube.com/watch?v=ISNdQcPhsts&t=13s
 '''
 Config for robust access to hyparameters, paths and specifics of the dataset
 '''
@@ -12,9 +11,9 @@ def get_config():
         "lr": 10**-4,
         "seq_len": 350,
         "d_model": 512,
-        "datasource": 'opus_books',
-        "lang_src": "en", # input language
-        "lang_trgt": "it", # output language
+        "lang_src": "eng", # input language
+        "lang_trgt": "ukr", # output language
+        "dataset_path": "eng-ukr-dataset",
         "model_folder": "weights",
         "model_basename": "tmodel_",
         "preload": "latest",

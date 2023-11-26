@@ -28,9 +28,9 @@ class BilingualDataset(Dataset):
 
     def __getitem__(self, idx):
         # get item from dataset with index idx
-        src_target_pair = self.ds[idx] # extract original pair
-        src_text = src_target_pair['translation'][self.src_lang] # source text
-        trgt_text = src_target_pair['translation'][self.trgt_lang] # target text
+        src_trgt_pair = self.ds[idx] # extract original pair
+        src_text = src_trgt_pair['translation'][self.src_lang] # source text
+        trgt_text = src_trgt_pair['translation'][self.trgt_lang] # target text
 
         # Transform the text into tokens (list of numbers representing the sentence)
         src_tokenized = self.tokenizer_src.encode(src_text).ids # for source lang
