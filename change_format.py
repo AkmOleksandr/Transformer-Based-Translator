@@ -10,8 +10,8 @@ def read_sentences(file_path):
         return [line.strip() for line in file]
 
 # Paths to your text files
-eng_file_path = 'eng-ukr-dataset/eng1.txt'
-ukr_file_path = 'eng-ukr-dataset/ukr1.txt'
+eng_file_path = 'eng-ukr-dataset/eng.txt'
+ukr_file_path = 'eng-ukr-dataset/ukr.txt'
 
 # Read sentences from the files
 eng_sentences = read_sentences(eng_file_path)

@@ -1,5 +1,9 @@
 '''
-Take a batch of train data (a single sentence), take labels (same sentence of target language), compute loss, optimize with Adam, run validation (... take this,  pass through encoder, receive encoder output (computed once). Then pass encoder output( embedding of the shape... where each row is...) along with empty decoder output (<SOS> token)..., predict a single word, append it to decoder output and pass the encoder output along with update decoder output(<SOS> 'word'), until we ...) )  
+Take a batch of train data (a single sentence), take labels (same sentence of target language), compute loss,
+optimize with Adam, run validation (... take this,  pass through encoder, receive encoder output (computed once). 
+Then pass encoder output( embedding of the shape... where each row is...) along with empty decoder output (<SOS> token)...,
+predict a single word, append it to decoder output and pass the encoder output along with update decoder output(<SOS> 'word'),
+until we ...) )  
 '''
 # From files
 from model import build_transformer
