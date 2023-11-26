@@ -27,7 +27,6 @@ def get_all_sentences(ds, lang): # get all sentences of the dataset (method will
         yield item['translation'][lang]
 
 def get_or_build_tokenizer(config, ds, lang): # config -  access dictionary with hyparameters and paths, ds - dataset, lang - language
-
     tokenizer_path = Path(config['tokenizer_file'].format(lang)) # each lang has diff tokenizer
     if not Path.exists(tokenizer_path): # if doesn't exist
         tokenizer = Tokenizer(WordLevel(unk_token="[UNK]")) # tokenizer encouters uknown word - replaces it with UNK
@@ -40,9 +39,7 @@ def get_or_build_tokenizer(config, ds, lang): # config -  access dictionary with
     return tokenizer
 
 def get_ds(config): # load, split the dataset for training and testing and tokenize it
-    
     ds_raw = load_dataset('json', data_files='eng-ukr-dataset/data.json', split='train') # initial dataset
-
     # Build tokenizers for source and target data
     tokenizer_src = get_or_build_tokenizer(config, ds_raw, config['lang_src'])
     tokenizer_trgt = get_or_build_tokenizer(config, ds_raw, config['lang_trgt'])
@@ -68,10 +65,8 @@ def get_model(config, vocab_src_len, vocab_trgt_len): # build the model
 
 
 def train_model(config):
-
     device = "cuda" if torch.cuda.is_available() else "mps" if torch.has_mps or torch.backends.mps.is_available() else "cpu"
     device = torch.device(device)
-
     
     # Make sure the weights folder exists
     Path(f"{config['model_folder']}").mkdir(parents=True, exist_ok=True)
