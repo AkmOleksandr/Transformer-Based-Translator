@@ -1,9 +1,6 @@
 '''
-Take a batch of train data (a single sentence), take labels (same sentence of target language), compute loss,
-optimize with Adam, run validation (... take this,  pass through encoder, receive encoder output (computed once). 
-Then pass encoder output( embedding of the shape... where each row is...) along with empty decoder output (<SOS> token)...,
-predict a single word, append it to decoder output and pass the encoder output along with update decoder output(<SOS> 'word'),
-until we ...) )  
+Take a batch of train data (a single sentence), take labels (same sentence of target language),
+compute loss, optimize with Adam, run validation.
 '''
 # From files
 from model import build_transformer
@@ -194,7 +191,7 @@ def greedy_decode(model, encoder_input, encoder_mask, tokenizer_src, tokenizer_t
 
     decoder_input = torch.empty(1, 1).fill_(sos_idx).type_as(encoder_input).to(device) # initialize the decoder input with <SOS>
 
-    while decoder_input.size(1) < max_len: # until decoder_input size is less than max_len(seq_len)
+    while decoder_input.size(1) < max_len: # until decoder_input size is less than seq_len
 
         decoder_mask = causal_mask(decoder_input.size(1)).type_as(encoder_mask).to(device)
     
