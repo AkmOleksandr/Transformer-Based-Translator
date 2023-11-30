@@ -14,6 +14,8 @@ def get_translation(sentence: str):
     config = get_config()
     tokenizer_src_path = Path(config['tokenizer_file'].format(config['lang_src']))
     tokenizer_trgt_path = Path(config['tokenizer_file'].format(config['lang_trgt']))
+    print(f"tokenizer_src_path: {tokenizer_src_path}")
+    print(f"tokenizer_trgt_path: {tokenizer_trgt_path}")
     tokenizer_src = Tokenizer.from_file(str(tokenizer_src_path))
     tokenizer_trgt = Tokenizer.from_file(str(tokenizer_trgt_path))
     model = build_transformer(tokenizer_src.get_vocab_size(), tokenizer_trgt.get_vocab_size(), config["seq_len"], config['seq_len'], d_model=config['d_model']).to(device)
