@@ -12,8 +12,10 @@ def get_translation(sentence: str):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
     config = get_config()
-    tokenizer_src = Tokenizer.from_file(str(Path(config['tokenizer_file'].format(config['lang_src']))))
-    tokenizer_trgt = Tokenizer.from_file(str(Path(config['tokenizer_file'].format(config['lang_trgt']))))
+    tokenizer_src_path = Path(config['tokenizer_file'].format(config['lang_src'])
+    tokenizer_trgt_path = Path(config['tokenizer_file'].format(config['lang_trgt']) 
+    tokenizer_src = Tokenizer.from_file(str(tokenizer_src_path))
+    tokenizer_trgt = Tokenizer.from_file(str(tokenizer_trgt_path))
     model = build_transformer(tokenizer_src.get_vocab_size(), tokenizer_trgt.get_vocab_size(), config["seq_len"], config['seq_len'], d_model=config['d_model']).to(device)
 
     # Load the pretrained weights
