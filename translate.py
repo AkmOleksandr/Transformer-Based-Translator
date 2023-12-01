@@ -1,5 +1,5 @@
 from pathlib import Path
-from config import get_config, latest_weights_file_path 
+from config import latest_weights_file_path 
 from model import build_transformer
 from tokenizers import Tokenizer
 from datasets import load_dataset
@@ -30,6 +30,8 @@ def get_translation(config, sentence: str):
         label = ds[id]["tgt_text"]
     seq_len = config['seq_len']
 
+    # Initialize an empty string to store the translation
+    translation_result = ""
     # translate the sentence
     model.eval()
     with torch.no_grad():
@@ -52,7 +54,7 @@ def get_translation(config, sentence: str):
         print(f"{f'SOURCE: ':>12}{sentence}")
         if label != "": print(f"{f'TARGET: ':>12}{label}") 
         print(f"{f'PREDICTED: ':>12}", end='')
-
+        
         # Generate the translation word by word
         while decoder_input.size(1) < seq_len:
             # Build mask for target and calculate output
@@ -64,15 +66,15 @@ def get_translation(config, sentence: str):
             _, next_word = torch.max(prob, dim=1)
             decoder_input = torch.cat([decoder_input, torch.empty(1, 1).type_as(source).fill_(next_word.item()).to(device)], dim=1)
 
-            # Print the translated word
-            print(f"{tokenizer_tgt.decode([next_word.item()])}", end=' ')
+            # Build the translated word
+            translated_word = tokenizer_tgt.decode([next_word.item()])
+
+            # Append the translated word to the result string
+            translation_result += translated_word + ' '
 
             # Break if we predict the end of sentence token
             if next_word == tokenizer_tgt.token_to_id('[EOS]'):
                 break
 
     # Convert ids to tokens
-    return tokenizer_tgt.decode(decoder_input[0].tolist())
-    
-# Read sentence from argument
-get_translation(sys.argv[1] if len(sys.argv) > 1 else "I am not a very good a student.")
+    return translation_result.strip()
