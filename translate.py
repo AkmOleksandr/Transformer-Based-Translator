@@ -22,8 +22,7 @@ def get_translation(sentence: str):
     model = build_transformer(tokenizer_src.get_vocab_size(), tokenizer_trgt.get_vocab_size(), config["seq_len"], config['seq_len'], d_model=config['d_model']).to(device)
 
     # Load the pretrained weights
-    base_model_path = Path(config['base_model_path'])
-    model_path = base_model_path.joinpath(latest_weights_file_path(config))
+    model_path = latest_weights_file_path(config)
     print(f"model_path: {model_path}")
     state = torch.load(model_path)
     model.load_state_dict(state['model_state_dict'])
