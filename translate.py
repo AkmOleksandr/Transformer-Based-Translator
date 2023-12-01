@@ -23,8 +23,9 @@ def get_translation(sentence: str):
 
     # Load the pretrained weights
     base_model_path = Path(config['base_model_path'])
-    model_filename = base_model_path.joinpath(latest_weights_file_path(config))
-    state = torch.load(model_filename)
+    model_path = base_model_path.joinpath(latest_weights_file_path(config))
+    print(f"model_path: {model_path}")
+    state = torch.load(model_path)
     model.load_state_dict(state['model_state_dict'])
 
     # if the sentence is a number use it as an index to the test set
