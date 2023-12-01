@@ -7,7 +7,7 @@ from dataset import BilingualDataset
 import torch
 import sys
 
-def translate(sentence: str):
+def get_translation(sentence: str):
     # Define the device, tokenizers, and model
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
@@ -74,12 +74,6 @@ def translate(sentence: str):
 
     # Convert ids to tokens
     return tokenizer_tgt.decode(decoder_input[0].tolist())
-    
-# Read sentence from argument
-translate(sys.argv[1] if len(sys.argv) > 1 else "I am not a very good a student.")
-
-    # Convert ids to tokens
-    return tokenizer_trgt.decode(decoder_input[0].tolist())
     
 # Read sentence from argument
 get_translation(sys.argv[1] if len(sys.argv) > 1 else "I am not a very good a student.")
