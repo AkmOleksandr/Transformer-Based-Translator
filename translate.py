@@ -12,9 +12,9 @@ def get_translation(sentence: str):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
     config = get_config()
-    base_path = Path(config['base_tokenizer_path'])
-    tokenizer_src_path = base_path.joinpath(config['tokenizer_file'].format(config['lang_src']))
-    tokenizer_trgt_path = base_path.joinpath(config['tokenizer_file'].format(config['lang_trgt']))
+    base_tokenizer_path = Path(config['base_tokenizer_path'])
+    tokenizer_src_path = base_tokenizer_path.joinpath(config['tokenizer_file'].format(config['lang_src']))
+    tokenizer_trgt_path = base_tokenizer_path.joinpath(config['tokenizer_file'].format(config['lang_trgt']))
     print(f"tokenizer_src_path: {tokenizer_src_path}")
     print(f"tokenizer_trgt_path: {tokenizer_trgt_path}")
     tokenizer_src = Tokenizer.from_file(str(tokenizer_src_path))
@@ -22,7 +22,8 @@ def get_translation(sentence: str):
     model = build_transformer(tokenizer_src.get_vocab_size(), tokenizer_trgt.get_vocab_size(), config["seq_len"], config['seq_len'], d_model=config['d_model']).to(device)
 
     # Load the pretrained weights
-    model_filename = latest_weights_file_path(config)
+    base_model_path = Path(config['base_model_path'])
+    model_filename = base_model_path.joinpath(latest_weights_file_path(config))
     state = torch.load(model_filename)
     model.load_state_dict(state['model_state_dict'])
 
