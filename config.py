@@ -18,7 +18,8 @@ def get_config():
         "model_basename": "tmodel_",
         "preload": "latest",
         "tokenizer_file": "tokenizer_{0}.json",
-        "base_tokenizer_path": "..//drive/MyDrive/MyModels/Translator/vocab"
+        "base_tokenizer_path": "..//drive/MyDrive/MyModels/Translator/vocab",
+        "base_model_path": "..//drive/MyDrive/MyModels/Translator/weights"
     }
 
 def get_weights_file_path(config, epoch: str):
