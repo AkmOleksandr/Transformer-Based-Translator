@@ -28,8 +28,9 @@ def get_weights_file_path(config, epoch: str):
 
 # Find the latest weights file in the weights folder
 def latest_weights_file_path(config):
-    model_filename = f"{config['model_basename']}*"
-    weights_files = list(Path(config['model_folder']).glob(model_filename))
+    base_model_path = Path(config['base_model_path'])
+    model_path = base_model_path.joinpath(latest_weights_file_path(config))
+    weights_files = list(Path(config['model_folder']).glob(model_path))
     if len(weights_files) == 0:
         return None
     weights_files.sort()
