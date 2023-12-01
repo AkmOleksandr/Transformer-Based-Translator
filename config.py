@@ -17,8 +17,7 @@ def get_config():
         "model_folder": "weights",
         "model_basename": "tmodel_",
         "preload": "latest",
-        "tokenizer_basename": "tokenizer_{0}.json",
-        "tokenizer_folder": "tokenizers"
+        "tokenizer_file": "tokenizer_{0}.json",
     }
 
 def get_weights_file_path(config, epoch: str):
