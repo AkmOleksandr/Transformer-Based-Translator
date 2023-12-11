@@ -8,7 +8,7 @@ To explore the model's capabilities and see the results it can achieve, take a l
 
 ## Usage
 
-You have the option to train the model from scratch and use it directly by downloading the [Translator-Train-Inference.ipynb](Translator-Train-Inference.ipynb) notebook and running it on Google Colab.
+You have the option to train the model from scratch and use it directly by downloading the [Translator-Train-Inference.ipynb](https://github.com/AkmOleksandr/Transformer-Based-Translator/blob/main/Translator_Training-Inference.ipynb) notebook and running it on Google Colab.
 
 Happy translating!
 
