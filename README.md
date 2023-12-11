@@ -8,7 +8,7 @@ To explore the model's capabilities and see the results it can achieve, take a l
 
 ## Usage
 
-You have the option to train the model from scratch or use it directly by downloading the [Translator-Train-Inference.ipynb](Translator-Train-Inference.ipynb) notebook and running it on Google Colab. This notebook provides an easy and cost-free way to leverage the translator for your English-to-Ukrainian translation needs.
+You have the option to train the model from scratch and/or use it directly by downloading the [Translator-Train-Inference.ipynb](Translator-Train-Inference.ipynb) notebook and running it on Google Colab. 
 
 Happy translating!
 
