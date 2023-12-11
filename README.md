@@ -4,7 +4,7 @@ This project is a Transformer-based translator designed to convert English text 
 
 ## Getting Started
 
-To explore the model's capabilities and see the results it can achieve, take a look at the [Translator-Train-Inference.ipynb](Translator-Train-Inference.ipynb) notebook.
+To explore the model's capabilities and see the results it can achieve, take a look at the [Translator-Train-Inference.ipynb](https://github.com/AkmOleksandr/Transformer-Based-Translator/blob/main/Translator_Training-Inference.ipynb) notebook.
 
 ## Usage
 
