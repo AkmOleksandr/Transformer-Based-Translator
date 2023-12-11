@@ -40,7 +40,7 @@ def get_or_build_tokenizer(config, ds, lang): # config -  access dictionary with
     return tokenizer
 
 def get_ds(config): # load, split the dataset for training and testing and tokenize it
-    ds_raw = load_dataset('json', data_files='eng-ukr-dataset/data.json', split='train') # initial dataset
+    ds_raw = load_dataset('json', data_files='data/eng-ukr-dataset/data.json', split='train') # initial dataset
     # Build tokenizers for source and target data
     tokenizer_src = get_or_build_tokenizer(config, ds_raw, config['lang_src'])
     tokenizer_trgt = get_or_build_tokenizer(config, ds_raw, config['lang_trgt'])
