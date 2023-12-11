@@ -57,9 +57,7 @@ class MultiHeadAttentionBlock(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def attention(Q, K, V, mask, dropout):
-
         d_k = Q.shape[-1]
-
         attention_scores = (Q @ K.transpose(-2, -1)) / math.sqrt(d_k) # formula for attention
 
         if mask is not None:
@@ -90,7 +88,6 @@ class MultiHeadAttentionBlock(nn.Module):
 class LayerNormalization(nn.Module): # normalize 
     def __init__(self, num_features, eps=1e-6):
         super().__init__()
-
         self.eps = eps
         self.alpha = nn.Parameter(torch.ones(num_features))
         self.bias = nn.Parameter(torch.zeros(num_features))
@@ -143,7 +140,6 @@ class Encoder(nn.Module):
 class DecoderBlock(nn.Module):
     def __init__(self, num_features, self_attention_block, cross_attention_block, feed_forward_block, dropout):
         super().__init__()
-
         self.self_attention_block = self_attention_block
         self.cross_attention_block = cross_attention_block
         self.feed_forward_block = feed_forward_block
@@ -160,7 +156,6 @@ class DecoderBlock(nn.Module):
 class Decoder(nn.Module):
     def __init__(self, num_features, layers):
         super().__init__()
-
         self.layers = layers
         self.norm = LayerNormalization(num_features)
 
@@ -172,17 +167,14 @@ class Decoder(nn.Module):
         return self.norm(X)
     
 class ProjectionLayer(nn.Module): # maps embedding with positions in vocabulary
-
     def __init__(self, d_model, vocab_size):
         super().__init__()
         self.proj = nn.Linear(d_model, vocab_size)
 
     def forward(self, X):
-        
         return self.proj(X) # (batch, seq_len, d_model) --> (batch, seq_len, vocab_size)
     
 class Transformer(nn.Module):
-
     def __init__(self, encoder: Encoder, decoder: Decoder, src_embed: InputEmbeddings, trgt_embed: InputEmbeddings, src_pos: PositionalEncoding, trgt_pos: PositionalEncoding, projection_layer: ProjectionLayer):
         super().__init__()
         self.encoder = encoder

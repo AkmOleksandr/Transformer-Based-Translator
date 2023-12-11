@@ -64,7 +64,6 @@ def get_model(config, vocab_src_len, vocab_trgt_len): # build the model
     model = build_transformer(vocab_src_len, vocab_trgt_len, config["seq_len"], config['seq_len'], d_model=config['d_model'])
     return model
 
-
 def train_model(config):
     device = "cuda" if torch.cuda.is_available() else "mps" if torch.has_mps or torch.backends.mps.is_available() else "cpu"
     device = torch.device(device)
@@ -128,7 +127,7 @@ def train_model(config):
             global_step += 1
 
         # Run validation after each epoch
-        run_validation(model, val_dataloader, tokenizer_src, tokenizer_trgt, config['seq_len'], device, lambda msg: batch_iterator.write(msg), global_step) # batch_iterator for visualization of the bar and loss
+        run_validation(model, val_dataloader, tokenizer_trgt, config['seq_len'], device, lambda msg: batch_iterator.write(msg)) # batch_iterator for visualization of the bar and loss
 
         # Save the model after each epoch
         model_filename = get_weights_file_path(config, f"{epoch:02d}")
@@ -142,8 +141,7 @@ def train_model(config):
             'global_step': global_step
         }, model_filename)
 
-def run_validation(model, validation_ds, tokenizer_src, tokenizer_trgt, max_len, device, print_msg, global_step, num_examples=2):
-
+def run_validation(model, validation_ds, tokenizer_trgt, max_len, device, print_msg, num_examples=2):
     model.eval()
     count = 0
 
@@ -166,7 +164,7 @@ def run_validation(model, validation_ds, tokenizer_src, tokenizer_trgt, max_len,
             assert encoder_input.size(
                 0) == 1, "Batch size must be 1 for validation"
 
-            model_out = greedy_decode(model, encoder_input, encoder_mask, tokenizer_src, tokenizer_trgt, max_len, device) # prediction of the sentence in tokens
+            model_out = greedy_decode(model, encoder_input, encoder_mask, tokenizer_trgt, max_len, device) # prediction of the sentence in tokens
 
             source_text = batch["src_text"][0] # original source sentence
             target_text = batch["trgt_text"][0] # original target sentence
@@ -182,7 +180,7 @@ def run_validation(model, validation_ds, tokenizer_src, tokenizer_trgt, max_len,
                 print_msg('-'*console_width)
                 break
 
-def greedy_decode(model, encoder_input, encoder_mask, tokenizer_src, tokenizer_trgt, max_len, device): # loads model, encoder_input, encoder_mask, tokenizer of source lang, tokenizer of trgt lang, max_len of sentence, device
+def greedy_decode(model, encoder_input, encoder_mask, tokenizer_trgt, max_len, device): # loads model, encoder_input, encoder_mask, tokenizer of source lang, tokenizer of trgt lang, max_len of sentence, device
 
     sos_idx = tokenizer_trgt.token_to_id('[SOS]') # create <SOS> token
     eos_idx = tokenizer_trgt.token_to_id('[EOS]') # create <EOS> token
