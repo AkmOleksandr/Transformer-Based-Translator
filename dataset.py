@@ -81,11 +81,11 @@ class BilingualDataset(Dataset):
         assert label.size(0) == self.seq_len
 
         return {
-            "encoder_input": encoder_input,  # (seq_len) specific tokenied sentence of source lang
-            "decoder_input": decoder_input,  # (seq_len) specific tokenied sentence of target lang without <EOS>
+            "encoder_input": encoder_input,  # (seq_len) specific tokenized sentence of source lang
+            "decoder_input": decoder_input,  # (seq_len) specific tokenized sentence of target lang without <EOS>
             "encoder_mask": (encoder_input != self.pad_token).unsqueeze(0).unsqueeze(0).int(), # (1, 1, seq_len) it's done to remove padding from the attention
             "decoder_mask": (decoder_input != self.pad_token).unsqueeze(0).int() & causal_mask(decoder_input.size(0)), # remove padding and hide next words in masked multi-head self-attention by applying causal mask 
-            "label": label,  # (seq_len) specific tokenied sentence of target lang without <SOS>
+            "label": label,  # (seq_len) specific tokenized sentence of target lang without <SOS>
             "src_text": src_text, # original source sentence
             "trgt_text": trgt_text, # original target sentence
         }
